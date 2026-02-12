@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="MuzikRE — Where Sound Meets Science. Predict music popularity using Multiple Linear Regression.">
+    <title>MuzikRE — Where Sound Meets Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <!-- Animated BG -->
+    <div class="bg-mesh"></div>
+    <canvas id="bg-particles"></canvas>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-inner">
+            <a class="brand" href="/">
+                <span class="brand-icon">♪</span>
+                <span class="brand-name">Muzik<span class="brand-re">RE</span></span>
+            </a>
+            <p class="brand-tagline">Where Sound Meets Science</p>
+            <div class="header-badge">
+                <span class="badge-pulse"></span>
+                <span>Model Active</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ============================================
+             SECTION 1: UPLOAD & AUTO-PREDICT
+             ============================================ -->
+        <section class="section" id="upload-section">
+            <div class="section-title">
+                <h2>🎧 Upload & Predict</h2>
+                <p>Drop an audio file — MuzikRE will analyze features and predict popularity automatically</p>
+            </div>
+
+            <div class="upload-predict-grid">
+                <!-- Left: Upload + Player -->
+                <div class="card glass upload-player-card">
+                    <!-- Drop Zone -->
+                    <div class="dropzone" id="drop-zone">
+                        <div class="dz-empty" id="dz-empty">
+                            <div class="dz-icon">🎵</div>
+                            <p class="dz-title">Drag & drop your song here</p>
+                            <p class="dz-hint">or click to browse files</p>
+                            <span class="dz-formats">MP3 · WAV · OGG · FLAC · M4A · AAC · AIFF</span>
+                        </div>
+                        <div class="dz-filled" id="dz-filled" style="display:none;">
+                            <span class="dz-file-icon">🎵</span>
+                            <div class="dz-file-meta">
+                                <span class="dz-fname" id="upload-file-name">—</span>
+                                <span class="dz-fsize" id="upload-file-size">—</span>
+                            </div>
+                            <button type="button" class="dz-remove" id="file-remove" title="Remove file">✕</button>
+                        </div>
+                        <input type="file" id="audio-file-input" accept=".mp3,.wav,.ogg,.flac,.m4a,.aac,.wma,.aiff"
+                            hidden>
+                    </div>
+
+                    <!-- Player (appears after upload) -->
+                    <div class="player-area" id="player-area" style="display:none;">
+                        <canvas id="visualizer-canvas" class="viz-canvas"></canvas>
+                        <div class="player-controls">
+                            <div class="progress-wrap" id="progress-wrap">
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="progress-fill"></div>
+                                </div>
+                                <div class="progress-times">
+                                    <span id="time-current">0:00</span>
+                                    <span id="time-total">0:00</span>
+                                </div>
+                            </div>
+                            <div class="player-btns">
+                                <button class="pbtn pbtn-main" id="btn-play" title="Play / Pause">
+                                    <svg class="pbtn-icon" id="icon-play" viewBox="0 0 24 24">
+                                        <polygon points="6,3 20,12 6,21" />
+                                    </svg>
+                                    <svg class="pbtn-icon hidden" id="icon-pause" viewBox="0 0 24 24">
+                                        <rect x="5" y="3" width="4" height="18" />
+                                        <rect x="15" y="3" width="4" height="18" />
+                                    </svg>
+                                </button>
+                                <button class="pbtn pbtn-refresh" id="btn-repredict" title="Re-analyze & Re-predict">
+                                    <svg class="pbtn-icon" viewBox="0 0 24 24">
+                                        <path
+                                            d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="upload-status" id="upload-status"></div>
+                </div>
+
+                <!-- Right: Auto-Predict Result -->
+                <div class="card glass" id="auto-result-card">
+                    <div class="card-head">
+                        <h2><span class="head-icon">📊</span> Prediction Result</h2>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-placeholder" id="auto-placeholder">
+                            <div class="ph-icon">🎯</div>
+                            <p>Upload a song to see its<br><strong>predicted popularity</strong></p>
+                        </div>
+                        <div class="result-content" id="auto-result-content" style="display:none;">
+                            <div class="upload-song-badge" id="auto-song-name">—</div>
+                            <div class="gauge-wrap">
+                                <svg class="gauge-svg" viewBox="0 0 200 200">
+                                    <circle class="gauge-bg" cx="100" cy="100" r="85" fill="none" stroke="#1e1e3a"
+                                        stroke-width="12" stroke-dasharray="401" stroke-dashoffset="134"
+                                        transform="rotate(135 100 100)" />
+                                    <circle class="gauge-fill" id="auto-gauge-fill" cx="100" cy="100" r="85" fill="none"
+                                        stroke="url(#gGrad)" stroke-width="12" stroke-linecap="round"
+                                        stroke-dasharray="401" stroke-dashoffset="401"
+                                        transform="rotate(135 100 100)" />
+                                    <defs>
+                                        <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#ff0080" />
+                                            <stop offset="50%" stop-color="#7928ca" />
+                                            <stop offset="100%" stop-color="#00d2ff" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="gauge-num">
+                                    <span class="gauge-value" id="auto-gauge-value">0</span>
+                                    <span class="gauge-of">/ 100</span>
+                                </div>
+                            </div>
+                            <div class="pop-label" id="auto-pop-label">—</div>
+                            <div class="result-features" id="auto-result-features"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECTION 2: MANUAL FEATURES & PREDICT
+             ============================================ -->
+        <section class="section" id="manual-section">
+            <div class="section-title">
+                <h2>🎛️ Manual Prediction</h2>
+                <p>Adjust the sliders to set your own feature values and predict popularity</p>
+            </div>
+
+            <div class="manual-grid">
+                <!-- Features -->
+                <div class="card glass" id="features-card">
+                    <div class="card-head">
+                        <h2><span class="head-icon">🎛️</span> Audio Features</h2>
+                        <p class="card-sub">Drag the sliders to set values</p>
+                    </div>
+                    <form id="predict-form" class="features-form">
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>⏱️ Duration</span>
+                                <span class="slider-val" id="duration_min-val">3.5 min</span>
+                            </div>
+                            <input type="range" id="duration_min" name="duration_min" min="1.5" max="8" step="0.1"
+                                value="3.5" class="range" data-unit=" min">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>🥁 Tempo</span>
+                                <span class="slider-val" id="tempo_bpm-val">120 BPM</span>
+                            </div>
+                            <input type="range" id="tempo_bpm" name="tempo_bpm" min="60" max="200" step="1" value="120"
+                                class="range" data-unit=" BPM">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>⚡ Energy</span>
+                                <span class="slider-val" id="energy-val">0.60</span>
+                            </div>
+                            <input type="range" id="energy" name="energy" min="0" max="1" step="0.01" value="0.6"
+                                class="range" data-unit="">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>💃 Danceability</span>
+                                <span class="slider-val" id="danceability-val">0.60</span>
+                            </div>
+                            <input type="range" id="danceability" name="danceability" min="0" max="1" step="0.01"
+                                value="0.6" class="range" data-unit="">
+                        </div>
+                        <div class="slider-row">
+                            <div class="slider-label">
+                                <span>🔊 Loudness</span>
+                                <span class="slider-val" id="loudness_db-val">-8.0 dB</span>
+                            </div>
+                            <input type="range" id="loudness_db" name="loudness_db" min="-30" max="0" step="0.5"
+                                value="-8" class="range" data-unit=" dB">
+                        </div>
+                        <button type="submit" class="btn-predict" id="predict-btn">
+                            <span class="btn-text">🔮 Predict Popularity</span>
+                            <span class="btn-loader" style="display:none;"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Manual Result -->
+                <div class="card glass" id="manual-result-card">
+                    <div class="card-head">
+                        <h2><span class="head-icon">📊</span> Popularity Score</h2>
+                    </div>
+                    <div class="result-body">
+                        <div class="result-placeholder" id="manual-placeholder">
+                            <div class="ph-icon">🎯</div>
+                            <p>Adjust features & click <strong>Predict</strong></p>
+                        </div>
+                        <div class="result-content" id="manual-result-content" style="display:none;">
+                            <div class="gauge-wrap">
+                                <svg class="gauge-svg" viewBox="0 0 200 200">
+                                    <circle class="gauge-bg" cx="100" cy="100" r="85" fill="none" stroke="#1e1e3a"
+                                        stroke-width="12" stroke-dasharray="401" stroke-dashoffset="134"
+                                        transform="rotate(135 100 100)" />
+                                    <circle class="gauge-fill" id="manual-gauge-fill" cx="100" cy="100" r="85"
+                                        fill="none" stroke="url(#gGrad)" stroke-width="12" stroke-linecap="round"
+                                        stroke-dasharray="401" stroke-dashoffset="401"
+                                        transform="rotate(135 100 100)" />
+                                </svg>
+                                <div class="gauge-num">
+                                    <span class="gauge-value" id="manual-gauge-value">0</span>
+                                    <span class="gauge-of">/ 100</span>
+                                </div>
+                            </div>
+                            <div class="pop-label" id="manual-pop-label">—</div>
+                            <div class="result-features" id="manual-result-features"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== MODEL STATS ===== -->
+        <section class="section stats-section" id="stats">
+            <div class="section-title">
+                <h2>📈 Model Performance</h2>
+                <p>Multiple Linear Regression — evaluation metrics</p>
+            </div>
+            <div class="metrics-row" id="metrics-grid"></div>
+        </section>
+
+        <!-- ===== COEFFICIENTS ===== -->
+        <section class="section coeff-section" id="coeffs">
+            <div class="section-title">
+                <h2>🧮 Feature Coefficients</h2>
+                <p>How each feature influences the prediction</p>
+            </div>
+            <div class="coeff-row" id="coeff-grid"></div>
+        </section>
+
+        <!-- ===== EDA ===== -->
+        <section class="section eda-section" id="eda">
+            <div class="section-title">
+                <h2>🔍 Exploratory Data Analysis</h2>
+                <p>Visualizations from the training dataset (300 samples)</p>
+            </div>
+            <div class="eda-grid">
+                <div class="card glass eda-item">
+                    <h3>Correlation Heatmap</h3>
+                    <img src="/static/images/correlation_heatmap.png" alt="Correlation Heatmap" loading="lazy">
+                </div>
+                <div class="card glass eda-item">
+                    <h3>Actual vs Predicted</h3>
+                    <img src="/static/images/actual_vs_predicted.png" alt="Actual vs Predicted" loading="lazy">
+                </div>
+                <div class="card glass eda-item eda-wide">
+                    <h3>Feature Distributions</h3>
+                    <img src="/static/images/feature_distributions.png" alt="Feature Distributions" loading="lazy">
+                </div>
+                <div class="card glass eda-item eda-wide">
+                    <h3>Features vs Popularity</h3>
+                    <img src="/static/images/scatter_plots.png" alt="Scatter Plots" loading="lazy">
+                </div>
+                <div class="card glass eda-item">
+                    <h3>Residual Plot</h3>
+                    <img src="/static/images/residual_plot.png" alt="Residual Plot" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <div class="footer-brand">
+                <span class="brand-icon-sm">♪</span>
+                <span>Muzik<span class="brand-re">RE</span></span>
+            </div>
+            <p>Where Sound Meets Science — Mini Project : Multiple Linear Regression</p>
+            <p class="footer-tech">Docker · scikit-learn · librosa · Python</p>
+        </footer>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{
+  "r2_train": 0.4962,
+  "r2_test": 0.3512,
+  "adjusted_r2": 0.3367,
+  "mae": 9.0462,
+  "mse": 133.0098,
+  "rmse": 11.533,
+  "intercept": 62.1861,
+  "coefficients": {
+    "duration_min": -2.2057,
+    "tempo_bpm": -1.3194,
+    "energy": 0.6414,
+    "danceability": 5.8986,
+    "loudness_db": 6.0625
+  },
+  "features": [
+    "duration_min",
+    "tempo_bpm",
+    "energy",
+    "danceability",
+    "loudness_db"
+  ],
+  "n_train": 915,
+  "n_test": 229
+}

@@ -1,0 +1,12 @@
+services:
+  muzikre:
+    build: .
+    container_name: muzikre
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./model:/app/model
+    environment:
+      - FLASK_DEBUG=false
+    restart: unless-stopped
