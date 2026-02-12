@@ -145,6 +145,7 @@ function displayAutoResult(popularity, features, fileName) {
     animateGauge('auto-gauge-fill', 'auto-gauge-value', popularity);
     setPopLabel('auto-pop-label', popularity);
     renderFeatureDetails('auto-result-features', features);
+    renderRadarChart('auto-radar-chart', features);
 }
 
 function setStatus(msg, cls) {
@@ -336,6 +337,7 @@ function displayManualResult(popularity, features) {
     animateGauge('manual-gauge-fill', 'manual-gauge-value', popularity);
     setPopLabel('manual-pop-label', popularity);
     renderFeatureDetails('manual-result-features', features);
+    renderRadarChart('manual-radar-chart', features);
 }
 
 // ============================================================
@@ -404,6 +406,7 @@ async function loadModelInfo() {
         const data = await res.json();
         renderMetrics(data.evaluation);
         renderCoefficients(data.evaluation);
+        featureRanges = data.feature_ranges; // Store globally
     } catch (err) {
         console.error('Model info load failed:', err);
     }
@@ -512,6 +515,81 @@ function initScrollReveal() {
     }, { threshold: 0.1 });
     document.querySelectorAll('.section').forEach(s => { s.classList.add('reveal'); obs.observe(s); });
 }
+
+// ============================================================
+//  CHARTS (Radar)
+// ============================================================
+let chartInstances = {};
+let featureRanges = null; // Populated from /model-info
+
+function renderRadarChart(canvasId, features) {
+    if (!featureRanges) return; // Not loaded yet
+
+    const ctx = document.getElementById(canvasId).getContext('2d');
+
+    // Destroy existing chart if any
+    if (chartInstances[canvasId]) {
+        chartInstances[canvasId].destroy();
+    }
+
+    // Normalize values 0-1
+    const labels = Object.keys(features).map(k => FEAT_NAMES[k] || k);
+    const data = Object.keys(features).map(k => {
+        const val = features[k];
+        const min = featureRanges[k].min;
+        const max = featureRanges[k].max;
+        const norm = (val - min) / (max - min);
+        return Math.max(0, Math.min(1, norm)); // Clip 0-1
+    });
+
+    chartInstances[canvasId] = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Audio Profile',
+                data: data,
+                backgroundColor: 'rgba(0, 210, 255, 0.2)',
+                borderColor: '#00d2ff',
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#ff0080',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#ff0080',
+                borderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    pointLabels: {
+                        color: '#a0a0c0',
+                        font: { family: 'Outfit', size: 12 }
+                    },
+                    ticks: { display: false, maxTicksLimit: 5 },
+                    suggestedMin: 0,
+                    suggestedMax: 1
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => {
+                            const key = Object.keys(features)[ctx.dataIndex];
+                            return `${FEAT_NAMES[key]}: ${features[key]}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
 
 // ============================================================
 //  UTILS

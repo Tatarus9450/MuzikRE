@@ -13,6 +13,7 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -142,6 +143,9 @@
                             </div>
                             <div class="pop-label" id="auto-pop-label">—</div>
                             <div class="result-features" id="auto-result-features"></div>
+                            <div class="chart-container">
+                                <canvas id="auto-radar-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -240,6 +244,9 @@
                             </div>
                             <div class="pop-label" id="manual-pop-label">—</div>
                             <div class="result-features" id="manual-result-features"></div>
+                            <div class="chart-container">
+                                <canvas id="manual-radar-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -934,6 +934,14 @@ body {
     color: var(--re-green);
 }
 
+/* Chart */
+.chart-container {
+    width: 100%;
+    margin-top: 1.5rem;
+    position: relative;
+    height: 240px;
+}
+
 .coeff-negative {
     color: var(--re-orange);
 }
