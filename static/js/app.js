@@ -607,6 +607,37 @@ function renderRadarChart(canvasId, features) {
 }
 
 
+
+// ============================================================
+//  VOLUME CONTROL
+// ============================================================
+(function initVolume() {
+    const volSlider = document.getElementById('volume-slider');
+    const muteBtn = document.getElementById('mute-btn');
+    let lastVol = 1;
+
+    if (volSlider && audio) {
+        volSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+            if (audio.volume > 0) lastVol = audio.volume;
+        });
+    }
+
+    if (muteBtn && volSlider) {
+        muteBtn.addEventListener('click', () => {
+            if (audio.volume > 0) {
+                lastVol = audio.volume;
+                audio.volume = 0;
+                volSlider.value = 0;
+            } else {
+                audio.volume = lastVol || 0.5;
+                volSlider.value = audio.volume;
+            }
+        });
+    }
+})();
+
+
 // ============================================================
 //  UTILS
 // ============================================================

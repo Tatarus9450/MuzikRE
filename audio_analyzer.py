@@ -227,16 +227,29 @@ def get_audio_info(file_path):
     Returns:
         dict with file_name, file_size_mb, duration_sec, sample_rate
     """
-    y, sr = librosa.load(file_path, sr=22050, mono=True)
-    duration_sec = librosa.get_duration(y=y, sr=sr)
-    file_size = os.path.getsize(file_path)
+    try:
+        # Just load a tiny bit to get sample rate, use get_duration for length
+        # This avoids decoding the whole file for basic info
+        duration_sec = librosa.get_duration(path=file_path)
+        y, sr = librosa.load(file_path, sr=22050, mono=True, duration=5.0) 
+        
+        file_size = os.path.getsize(file_path)
 
-    return {
-        'file_name': os.path.basename(file_path),
-        'file_size_mb': round(file_size / (1024 * 1024), 2),
-        'duration_sec': round(duration_sec, 1),
-        'sample_rate': sr,
-    }
+        return {
+            'file_name': os.path.basename(file_path),
+            'file_size_mb': round(file_size / (1024 * 1024), 2),
+            'duration_sec': round(duration_sec, 1),
+            'sample_rate': sr,
+        }
+    except Exception:
+        # Fallback if optimized loading fails
+        return {
+            'file_name': os.path.basename(file_path),
+            'file_size_mb': 0,
+            'duration_sec': 0,
+            'sample_rate': 22050
+        }
+
 
 
 if __name__ == "__main__":

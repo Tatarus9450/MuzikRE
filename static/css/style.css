@@ -451,8 +451,57 @@ body {
 .player-btns {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 14px;
     margin-top: 10px;
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.pbtn-vol {
+    width: 24px;
+    height: 24px;
+    color: var(--text-2);
+}
+
+.pbtn-vol:hover {
+    color: var(--re-cyan);
+}
+
+.pbtn-vol .pbtn-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.vol-range {
+    -webkit-appearance: none;
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+}
+
+.vol-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--re-cyan);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.vol-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
 }
 
 .pbtn {
