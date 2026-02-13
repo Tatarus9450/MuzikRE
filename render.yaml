@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: muzikre
+    env: docker
+    plan: free
+    region: singapore
+    branch: main
+    repo: https://github.com/Tatarus9450/MuzikRE
+    healthCheckPath: /
+    envVars:
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: PORT
+        value: "5000"
