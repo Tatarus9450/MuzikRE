@@ -131,9 +131,14 @@ def analyze_audio(file_path):
         # 1. Get full duration first (fast, doesn't decode whole file)
         duration_sec = librosa.get_duration(path=file_path)
         
-        # 2. Load only first 60 seconds for analysis to save RAM (Render Free Tier limit)
-        #    Most features (tempo, energy, etc.) are consistent throughout the track.
-        y, sr = librosa.load(file_path, sr=22050, mono=True, duration=60)
+        # 2. Smart optimization: Load 60 seconds from the MIDDLE of the song
+        #    The "hook" or most energetic part is usually in the center.
+        if duration_sec > 60:
+            offset = (duration_sec / 2) - 30
+        else:
+            offset = 0.0
+            
+        y, sr = librosa.load(file_path, sr=22050, mono=True, offset=offset, duration=60)
     except Exception as e:
         raise ValueError(f"ไม่สามารถโหลดไฟล์เสียงได้: {str(e)}")
 
