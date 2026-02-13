@@ -128,16 +128,19 @@ def analyze_audio(file_path):
         ValueError: If the file cannot be loaded or analyzed
     """
     try:
-        # Load audio file
-        y, sr = librosa.load(file_path, sr=22050, mono=True)
+        # 1. Get full duration first (fast, doesn't decode whole file)
+        duration_sec = librosa.get_duration(path=file_path)
+        
+        # 2. Load only first 60 seconds for analysis to save RAM (Render Free Tier limit)
+        #    Most features (tempo, energy, etc.) are consistent throughout the track.
+        y, sr = librosa.load(file_path, sr=22050, mono=True, duration=60)
     except Exception as e:
         raise ValueError(f"ไม่สามารถโหลดไฟล์เสียงได้: {str(e)}")
 
     if len(y) == 0:
         raise ValueError("ไฟล์เสียงว่างเปล่า")
 
-    # 1. Duration (minutes)
-    duration_sec = librosa.get_duration(y=y, sr=sr)
+    # 1. Duration (minutes) - Use FULL duration
     duration_min = round(duration_sec / 60.0, 2)
     duration_min = max(1.5, min(8.0, duration_min))  # Clip to model range
 
