@@ -115,24 +115,40 @@ function clearUploadedFile() {
 }
 
 async function runAutoPredict(file) {
-    setStatus('⏳ Analyzing audio features Pls wait 1-3 minutes...', 'analyzing');
+    // Show initial status
+    setStatus('⏳ Validating file...', 'analyzing');
+
+    // Create progress simulation
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 5;
+        if (progress > 95) progress = 95;
+        setStatus(`⏳ Analyzing audio features... ${Math.round(progress)}% <br><small>(Large files may take 1-2 minutes)</small>`, 'analyzing');
+    }, 800);
 
     const fd = new FormData();
     fd.append('audio_file', file);
 
     try {
         const res = await fetch('/predict-file', { method: 'POST', body: fd });
+
+        clearInterval(progressInterval); // Stop animation
+
+        if (!res.ok) throw new Error('Network response was not ok');
+
         const data = await res.json();
 
         if (data.status === 'success') {
+            setStatus('✅ Analysis complete!', 'success');
             displayAutoResult(data.popularity, data.features, data.file_name);
             updateSlidersFromFeatures(data.features);
-            setStatus('✅ Analysis complete!', 'success');
         } else {
             setStatus('❌ ' + (data.error || 'Analysis failed'), 'error');
         }
     } catch (err) {
-        setStatus('❌ Network error', 'error');
+        clearInterval(progressInterval);
+        console.error(err);
+        setStatus('❌ Server timeout or network error. <br><small>Try a shorter file or check internet connection.</small>', 'error');
     }
 }
 
@@ -150,7 +166,7 @@ function displayAutoResult(popularity, features, fileName) {
 
 function setStatus(msg, cls) {
     const el = document.getElementById('upload-status');
-    el.textContent = msg;
+    el.innerHTML = msg; // Use innerHTML to support <br>
     el.className = 'upload-status' + (cls ? ' ' + cls : '');
 }
 
