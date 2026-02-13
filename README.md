@@ -3,8 +3,8 @@
 > **"Where Sound Meets Science"** — A project analyzing and predicting music popularity using Multiple Linear Regression.
 
 ![MuzikRE Banner](static/images/banner.png) 
-*(Optional banner placeholder)*
 
+## 🚀 Deploy to Render
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Tatarus9450/MuzikRE)
 
 ---
