@@ -123,7 +123,7 @@ async function runAutoPredict(file) {
     const progressInterval = setInterval(() => {
         progress += Math.random() * 5;
         if (progress > 95) progress = 95;
-        setStatus(`⏳ Analyzing audio features... ${Math.round(progress)}% <br><small>(Large files may take 1-2 minutes)</small>`, 'analyzing');
+        setStatus(`⏳ Analyzing audio features... ${Math.round(progress)}% <br><small>(Large files may take 3-4 minutes)</small>`, 'analyzing');
     }, 800);
 
     const fd = new FormData();
