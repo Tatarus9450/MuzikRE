@@ -115,7 +115,7 @@ function clearUploadedFile() {
 }
 
 async function runAutoPredict(file) {
-    setStatus('⏳ Analyzing audio features...', 'analyzing');
+    setStatus('⏳ Analyzing audio features Pls wait 1-3 minutes...', 'analyzing');
 
     const fd = new FormData();
     fd.append('audio_file', file);
